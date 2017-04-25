@@ -6,15 +6,20 @@
     <!--<color name="colorAccent">#FF4081</color>-->
     <color name="my_spinner_color">#FFFFFF</color>
 
-    <color name="colorPrimary">#009688</color>
+    <color name="colorPrimary">#D32F2F</color>
     <color name="colorPrimaryDark">#00796B</color>
-    <color name="primary_light">#B2DFDB</color>
-    <color name="colorAccent">#FFC107</color>
+    <color name="colorPrimaryLight">#B2DFDB</color>
+    <color name="colorBackground">#263238</color>
+    <color name="colorAccent">#ffc107</color>
     <color name="primary_text">#212121</color>
-    <color name="secondary_text">#BDBDBD</color>
-    <color name="colorDays">#B2DFDB</color>
-    <color name="colorData">#FFC107</color>
+    <color name="secondary_text">#eeeeee</color>
+    <color name="colorDaysLeft">#00796B</color>
+    <color name="colorDataUsed">#D32F2F</color>
     <color name="colorArc">#F0F0F0</color>
     <color name="icons">#FFFFFF</color>
     <color name="divider">#BDBDBD</color>
+    <color name="colorDarkGrey">#374349</color>
+    <color name="colorLightGrey">#48545A</color>
+    <color name="dataProgress">#000000</color>
+    <color name="daysProgress">#000000</color>
 </resources>

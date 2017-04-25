@@ -2,6 +2,7 @@ package com.teddyteh.kmusage.fragments;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -39,6 +40,9 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Random;
+
+import devlight.io.library.ArcProgressStackView;
 
 public class MainFragment extends Fragment {
     /**
@@ -51,6 +55,7 @@ public class MainFragment extends Fragment {
     public static final String TAG = "MainActivity";
     private KMadapter adapter;
     ProgressBar mProgress;
+    private ArcProgressStackView mArcProgressStackView;
     ImageView mImage;
     ListView mListView;
     ArrayList<ListItemDataModel> list;
@@ -107,7 +112,9 @@ public class MainFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 //            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
 //            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-        mImage = (ImageView) rootView.findViewById(R.id.imageView);
+
+        mArcProgressStackView = (ArcProgressStackView) rootView.findViewById(R.id.apsv);
+//        mImage = (ImageView) rootView.findViewById(R.id.imageView);
         mListView = (ListView) rootView.findViewById(R.id.listView);
         list = new ArrayList<ListItemDataModel>();
         drawView();
@@ -120,11 +127,28 @@ public class MainFragment extends Fragment {
             buildListView();
             MainActivityListViewAdapter lvAdapter = new MainActivityListViewAdapter(getActivity(), list);
             mListView.setAdapter(lvAdapter);
-            buildGraph(mImage);
+            drawProgress();
+//            buildGraph(mImage);
         } catch (KMexception ex) {
             Log.e(TAG, "Adapter error", ex);
 //            list.add(addItem("Error", "Kogan Mobile web page parse error"));
         }
+    }
+
+    private void drawProgress() throws KMexception {
+        int dataDaysPercentage = percent(30 - adapter.getDataDaysRemaining(), 30);
+        int dataPercentage = adapter.getData_percent();
+
+        final ArrayList<ArcProgressStackView.Model> models = new ArrayList<>();
+        models.add(new ArcProgressStackView.Model("Data used", dataPercentage, ContextCompat.getColor(getActivity().getApplicationContext(), R.color.colorDarkGrey), ContextCompat.getColor(getActivity().getApplicationContext(), R.color.colorDataUsed)));
+        models.add(new ArcProgressStackView.Model("Days left", dataDaysPercentage, ContextCompat.getColor(getActivity().getApplicationContext(), R.color.colorLightGrey), ContextCompat.getColor(getActivity().getApplicationContext(), R.color.colorDaysLeft)));
+        mArcProgressStackView.setModels(models);
+//        mArcProgressStackView.setStartAngle(180);
+//        mArcProgressStackView.setSweepAngle(270);
+////        mArcProgressStackView.setIsShadowed(false);
+//        mArcProgressStackView.setTypeface("fonts/agency.ttf");
+//        mArcProgressStackView.setAnimationDuration(1000);
+//        mArcProgressStackView.animateProgress();
     }
 
     /*
@@ -151,8 +175,8 @@ public class MainFragment extends Fragment {
         String dataPercentage = Integer.toString(adapter.getData_percent());
 
         list.clear();
-        list.add(addItemToList("Days left", new ArrayList<String>(Arrays.asList(dataStartDate, dataRenewalDate, dataDaysPercentage)), ContextCompat.getDrawable(getContext(), R.drawable.calendar_48px)));
-        list.add(addItemToList("Data used", new ArrayList<String>(Arrays.asList(dataUsed, quota, dataPercentage)), ContextCompat.getDrawable(getContext(), R.drawable.data_xfer_48px)));
+        list.add(addItemToList("Days left", new ArrayList<String>(Arrays.asList(dataStartDate, dataRenewalDate, dataDaysPercentage)), ContextCompat.getDrawable(getContext(), R.drawable.calendar_48px), ContextCompat.getColor(getContext(), R.color.colorDaysLeft)));
+        list.add(addItemToList("Data used", new ArrayList<String>(Arrays.asList(dataUsed, quota, dataPercentage)), ContextCompat.getDrawable(getContext(), R.drawable.data_xfer_48px), ContextCompat.getColor(getContext(), R.color.colorDataUsed)));
 
         //list.add(addItem("Account name", result.getName()));
         //list.add(addItem("Mobile number", result.getNumber()));
@@ -220,8 +244,8 @@ public class MainFragment extends Fragment {
         int padding = 5;
 
         int backgroundArcColor = ContextCompat.getColor(getActivity().getApplicationContext(), R.color.colorArc);
-        int daysArcColor = ContextCompat.getColor(getActivity().getApplicationContext(), R.color.colorDays);
-        int dataArcColor = ContextCompat.getColor(getActivity().getApplicationContext(), R.color.colorData);
+        int daysArcColor = ContextCompat.getColor(getActivity().getApplicationContext(), R.color.colorDaysLeft);
+        int dataArcColor = ContextCompat.getColor(getActivity().getApplicationContext(), R.color.colorDataUsed);
 
         // draw the outer circle on the canvas
         drawArc(canvas, outerRadius, backgroundArcColor, arcLength);
@@ -368,7 +392,7 @@ public class MainFragment extends Fragment {
         return ret;
     }
 
-    private ListItemDataModel addItemToList(String key, ArrayList<String> values, Drawable icon) {
-        return new ListItemDataModel(key, values, icon);
+    private ListItemDataModel addItemToList(String key, ArrayList<String> values, Drawable icon, int color) {
+        return new ListItemDataModel(key, values, icon, color);
     }
 }

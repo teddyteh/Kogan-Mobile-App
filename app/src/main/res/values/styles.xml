@@ -20,12 +20,12 @@
 
     <style name="mySpinnerItemStyle" parent="@android:style/Widget.Holo.DropDownItem.Spinner">
         <item name="android:textColor">@color/my_spinner_color</item>
-        <item name="android:background">@color/colorPrimary</item>
+        <item name="android:background">@color/colorBackground</item>
     </style>
 
     <style name="mySpinnerStyle">
         <item name="android:textColor">@color/my_spinner_color</item>
-        <item name="android:background">@color/colorPrimary</item>
+        <item name="android:background">@color/colorBackground</item>
     </style>
 
 </resources>

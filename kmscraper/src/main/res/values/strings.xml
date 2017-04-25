@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">KM Scraper</string>
+
+    <!-- Settings for authenticator -->
+    <string name="account_type">com.teddyteh.koganmobile.account</string>
+    <string name="authtoken_type">CSRF</string>
+</resources>

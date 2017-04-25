@@ -14,6 +14,8 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.daimajia.numberprogressbar.NumberProgressBar;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -26,7 +28,7 @@ public class MainActivityListViewAdapter extends BaseAdapter {
     ImageView icon;
     TextView tvName;
     TextView tvValue;
-    ProgressBar progress;
+    NumberProgressBar progress;
     ArrayList<ListItemDataModel> list;
 
     public MainActivityListViewAdapter(Activity activity, ArrayList<ListItemDataModel> list) {
@@ -82,12 +84,13 @@ public class MainActivityListViewAdapter extends BaseAdapter {
             tvName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
             tvValue = (TextView) convertView.findViewById(R.id.item_end);
             tvValue.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
-            progress = (ProgressBar) convertView.findViewById(R.id.item_progress);
+            progress = (NumberProgressBar) convertView.findViewById(R.id.number_progress_bar);
 
             icon.setImageDrawable(item.icon);
             tvName.setText(values.get(0));
             tvValue.setText(values.get(1));
             progress.setProgress(Integer.parseInt(values.get(2)));
+            progress.setReachedBarColor(item.color);
         }
 
 //        tvName.setText(map.get("NAME"));
