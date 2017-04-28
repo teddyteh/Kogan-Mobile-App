@@ -1,8 +1,5 @@
 package com.teddyteh.kmusage.fragments;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -24,66 +21,39 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 
 import com.teddyteh.kmscraper.KMadapter;
 import com.teddyteh.kmscraper.adapter.KMexception;
 import com.teddyteh.kmusage.ListItemDataModel;
-import com.teddyteh.kmusage.MainActivity;
-import com.teddyteh.kmusage.MainActivityListViewAdapter;
+import com.teddyteh.kmusage.MainFragmentListView;
 import com.teddyteh.kmusage.R;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Random;
 
 import devlight.io.library.ArcProgressStackView;
 
 public class MainFragment extends Fragment {
+    public static final String TAG = "MainActivity";
     /**
      * The fragment argument representing the section number for this
      * fragment.
      */
-    private static final String ARG_SECTION_NUMBER = "section_number";
-    private static MainFragment instance;
-
-    public static final String TAG = "MainActivity";
-    private KMadapter adapter;
-    ProgressBar mProgress;
-    private ArcProgressStackView mArcProgressStackView;
-    ImageView mImage;
     ListView mListView;
     ArrayList<ListItemDataModel> list;
+    private KMadapter adapter;
+    private ArcProgressStackView mArcProgressStackView;
 
     public MainFragment() {
-    }
 
-//    @SuppressLint("ValidFragment")
-//    public MainFragment(KMadapter adapter) {
-//        adapter = adapter;
-//        mProgress = (ProgressBar) getView().findViewById(R.id.progress);
-//        mImage = (ImageView) getView().findViewById(R.id.imageView);
-//        mListView = (ListView) getView().findViewById(R.id.listView);
-//        list = new ArrayList<HashMap<String, String>>();
-//    }
+    }
 
     /**
-     * Returns a new instance of this fragment for the given section
-     * number.
+     * Returns a new instance of this fragment
      */
-    public static MainFragment newInstance(int sectionNumber) {
-        MainFragment fragment = new MainFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     public static MainFragment newInstance(KMadapter adapter) {
         MainFragment fragment = new MainFragment();
         fragment.adapter = adapter;
@@ -91,57 +61,45 @@ public class MainFragment extends Fragment {
         return fragment;
     }
 
-    public static MainFragment getInstance() {
-        if (instance == null)
-            newInstance(0);
-
-        return instance;
-    }
-
-    @SuppressLint("ValidFragment")
-    public static MainFragment getInstance(KMadapter adapter) {
-        if (instance == null)
-            newInstance(adapter);
-
-        return instance;
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-//            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-//            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
 
         mArcProgressStackView = (ArcProgressStackView) rootView.findViewById(R.id.apsv);
-//        mImage = (ImageView) rootView.findViewById(R.id.imageView);
         mListView = (ListView) rootView.findViewById(R.id.listView);
-        list = new ArrayList<ListItemDataModel>();
+        list = new ArrayList<>();
         drawView();
 
         return rootView;
     }
 
+    /*
+     *  Render the view
+     */
     private void drawView() {
         try {
-            buildListView();
-            MainActivityListViewAdapter lvAdapter = new MainActivityListViewAdapter(getActivity(), list);
-            mListView.setAdapter(lvAdapter);
-            drawProgress();
+            drawProgressBar();
+            populateListView();
+            MainFragmentListView adapter = new MainFragmentListView(getActivity(), list);
+            mListView.setAdapter(adapter);
 //            buildGraph(mImage);
         } catch (KMexception ex) {
             Log.e(TAG, "Adapter error", ex);
-//            list.add(addItem("Error", "Kogan Mobile web page parse error"));
+            // TODO error message on UI
         }
     }
 
-    private void drawProgress() throws KMexception {
+    /*
+     *  Get a colour from the current theme
+     */
+    private void drawProgressBar() throws KMexception {
         int dataDaysPercentage = percent(30 - adapter.getDataDaysRemaining(), 30);
         int dataPercentage = adapter.getData_percent();
 
         final ArrayList<ArcProgressStackView.Model> models = new ArrayList<>();
-        models.add(new ArcProgressStackView.Model("Data used", dataPercentage, ContextCompat.getColor(getActivity().getApplicationContext(), R.color.colorDarkGrey), ContextCompat.getColor(getActivity().getApplicationContext(), R.color.colorDataUsed)));
-        models.add(new ArcProgressStackView.Model("Days left", dataDaysPercentage, ContextCompat.getColor(getActivity().getApplicationContext(), R.color.colorLightGrey), ContextCompat.getColor(getActivity().getApplicationContext(), R.color.colorDaysLeft)));
+        models.add(new ArcProgressStackView.Model("Data used", dataPercentage, getColorFromTheme(R.attr.colorDarkGrey), getColorFromTheme(R.attr.colorDataUsed)));
+        models.add(new ArcProgressStackView.Model("Days left", dataDaysPercentage, getColorFromTheme(R.attr.colorLightGrey), getColorFromTheme(R.attr.colorDaysLeft)));
         mArcProgressStackView.setModels(models);
 //        mArcProgressStackView.setStartAngle(180);
 //        mArcProgressStackView.setSweepAngle(270);
@@ -152,12 +110,19 @@ public class MainFragment extends Fragment {
     }
 
     /*
+     *  Get a colour from the current theme
+     */
+    public int getColorFromTheme(int attr) {
+        TypedValue a = new TypedValue();
+        getActivity().getTheme().resolveAttribute(attr, a, true);
+
+        return a.data;
+    }
+
+    /*
      *  Extract info from the result record and populate the ListView
      */
-    private void buildListView() throws KMexception {
-        // TODO Fix font metric so ListView scales smoothly to small screens
-        // --------------------------------------------------------------------------------
-        // --------------------------------------------------------------------------------
+    private void populateListView() throws KMexception {
 //        String dataUsed = scaledNumber(adapter.getNational_data()) + " of " + adapter.getQuota() + "MB (" + adapter.getData_percent() + "%)";
 //        String daysUsed = (30 - adapter.getDataDaysRemaining()) + " of 30 days (" + percent(30 - adapter.getDataDaysRemaining(), 30) + "%)";
 //        String timeUpd = fmtTime(adapter.getTS());
@@ -169,14 +134,14 @@ public class MainFragment extends Fragment {
         Date dataStart = cal.getTime();
         String dataStartDate = new SimpleDateFormat("d MMM yy").format(dataStart);
         String dataRenewalDate = new SimpleDateFormat("d MMM yy").format(adapter.getData_renews());
-        String dataDaysPercentage = Integer.toString(percent(30 - adapter.getDataDaysRemaining(), 30));
+        int dataDaysPercentage = percent(30 - adapter.getDataDaysRemaining(), 30);
         String dataUsed = scaledNumber(adapter.getNational_data());
         String quota = Integer.toString(adapter.getQuota()) + "MB";
-        String dataPercentage = Integer.toString(adapter.getData_percent());
+        int dataPercentage = adapter.getData_percent();
 
         list.clear();
-        list.add(addItemToList("Days left", new ArrayList<String>(Arrays.asList(dataStartDate, dataRenewalDate, dataDaysPercentage)), ContextCompat.getDrawable(getContext(), R.drawable.calendar_48px), ContextCompat.getColor(getContext(), R.color.colorDaysLeft)));
-        list.add(addItemToList("Data used", new ArrayList<String>(Arrays.asList(dataUsed, quota, dataPercentage)), ContextCompat.getDrawable(getContext(), R.drawable.data_xfer_48px), ContextCompat.getColor(getContext(), R.color.colorDataUsed)));
+        list.add(addItemToList("Days left", dataStartDate, dataRenewalDate, dataDaysPercentage, ContextCompat.getDrawable(getContext(), R.drawable.calendar_48px), getColorFromTheme(R.attr.colorDaysLeft)));
+        list.add(addItemToList("Data used", dataUsed, quota, dataPercentage, ContextCompat.getDrawable(getContext(), R.drawable.data_xfer_48px), getColorFromTheme(R.attr.colorDataUsed)));
 
         //list.add(addItem("Account name", result.getName()));
         //list.add(addItem("Mobile number", result.getNumber()));
@@ -187,6 +152,47 @@ public class MainFragment extends Fragment {
 //        list.add(addItem("Last data", dataUpd));
 //        list.add(addItem("Last updated", timeUpd));
 //        this.setTitle(adapter.getName() + ": " + adapter.getNumber());
+    }
+
+    /*
+     *  Creates a ListItemDataModel object which holds information about a list item
+     */
+    private ListItemDataModel addItemToList(String key, String startDate, String endDate, int percentage, Drawable icon, int color) {
+        return new ListItemDataModel(key, startDate, endDate, percentage, icon, color);
+    }
+
+    /*
+     *  Scale a raw number into KB/MB/GB
+     */
+    private String scaledNumber(long num) {
+        double number = (double) num;
+        double scale = 1.0;
+        String scaleStr = "";
+
+        if (num > 1024) {
+            scale = 1024.0;
+            scaleStr = "KB";
+        }
+        if (num > 1024 * 1024) {
+            scale = 1024.0 * 1024.0;
+            scaleStr = "MB";
+        }
+        if (num > 1024 * 1024 * 1024.0) {
+            scale = 1024.0 * 1024.0 * 1024.0;
+            scaleStr = "GB";
+        }
+        DecimalFormat fmt = new DecimalFormat("#.##");
+        //int round = (int)Math.floor((number / scale) + 0.5d);
+        double round = Double.valueOf(fmt.format(num / scale));
+        return round + scaleStr;
+    }
+
+    /*
+     *  Take two integers and return an int giving the percent
+     */
+    private int percent(int x, int y) {
+        double pc = (double) x / (double) y * 100.0d;
+        return (int) pc;
     }
 
     /*
@@ -346,53 +352,5 @@ public class MainFragment extends Fragment {
     private String fmtTime(Date ts) {
         SimpleDateFormat df = new SimpleDateFormat("HH:mm MMM d");
         return df.format(ts);
-    }
-
-    /*
-     *  Scale a raw number into KB/MB/GB
-     */
-    private String scaledNumber(long num) {
-        double number = (double) num;
-        double scale = 1.0;
-        String scaleStr = "";
-
-        if (num > 1024) {
-            scale = 1024.0;
-            scaleStr = "KB";
-        }
-        if (num > 1024 * 1024) {
-            scale = 1024.0 * 1024.0;
-            scaleStr = "MB";
-        }
-        if (num > 1024 * 1024 * 1024.0) {
-            scale = 1024.0 * 1024.0 * 1024.0;
-            scaleStr = "GB";
-        }
-        DecimalFormat fmt = new DecimalFormat("#.##");
-        //int round = (int)Math.floor((number / scale) + 0.5d);
-        double round = Double.valueOf(fmt.format(num / scale));
-        return round + scaleStr;
-    }
-
-    /*
-     *  Take two integers and return an int giving the percent
-     */
-    private int percent(int x, int y) {
-        double pc = (double) x / (double) y * 100.0d;
-        return (int) pc;
-    }
-
-    /*
-     *  Build a hashmap to hold a single entry for a ListView
-     */
-    private HashMap<String, String> addItem(String name, String value) {
-        HashMap<String, String> ret = new HashMap<String, String>();
-        ret.put("NAME", name);
-        ret.put("VALUE", value);
-        return ret;
-    }
-
-    private ListItemDataModel addItemToList(String key, ArrayList<String> values, Drawable icon, int color) {
-        return new ListItemDataModel(key, values, icon, color);
     }
 }

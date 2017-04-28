@@ -10,13 +10,17 @@ import java.util.ArrayList;
 
 public class ListItemDataModel {
     public String key;
-    public ArrayList<String> values;
+    public String startDate;
+    public String endDate;
+    public int percentage;
     public Drawable icon;
     public int color;
 
-    public ListItemDataModel(String key, ArrayList<String> values, Drawable icon, int color) {
+    public ListItemDataModel(String key, String startDate, String endDate, int percentage, Drawable icon, int color) {
         this.key = key;
-        this.values = values;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.percentage = percentage;
         this.icon = icon;
         this.color = color;
     }

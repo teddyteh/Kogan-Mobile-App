@@ -40,6 +40,7 @@ import com.teddyteh.kmscraper.adapter.KMLoginException;
 import com.teddyteh.kmscraper.adapter.KMUnavailableException;
 import com.teddyteh.kmscraper.adapter.KMexception;
 import com.teddyteh.kmusage.fragments.AboutFragment;
+import com.teddyteh.kmusage.fragments.AnalyticsFragment;
 import com.teddyteh.kmusage.fragments.MainFragment;
 
 import java.io.IOException;
@@ -50,14 +51,8 @@ import java.util.concurrent.CancellationException;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static Context m_Context;
-
-    public static Context getContext() {
-        return m_Context;
-    }
-
     public static final String TAG = "MainActivity";
-
+    private static Context m_Context;
     GooglePlayDriver mPlayDriver;
     FirebaseJobDispatcher mDispatcher;
     String mAccountType;
@@ -67,15 +62,17 @@ public class MainActivity extends AppCompatActivity {
     private String mUser;
     private String mPassword;
     private String mNickName;
-
     // Shared Prefs
     private int mSync;      //  Sync frequency in secs;
-
     // GUI references
     private ProgressBar mProgress;
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
     private Spinner mSpinner;
+
+    public static Context getContext() {
+        return m_Context;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -206,12 +203,12 @@ public class MainActivity extends AppCompatActivity {
         for (Account a : acc) {
             String nickname = mAccountManager.getUserData(a, AccountDetailsActivity.NICK_NAME);
 
-            spinnerArray.add(a.name + " (" + nickname + ")");
+            spinnerArray.add(nickname);
         }
         spinnerArray.add("Add account..");
 
         ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(
-                this, R.layout.simple_spinner_item, spinnerArray);
+                this, R.layout.fragment_main_accounts_spinner, spinnerArray);
 
         spinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
@@ -256,6 +253,28 @@ public class MainActivity extends AppCompatActivity {
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     public class RetrieveData extends AsyncTask<String, Void, KMadapter> {
@@ -352,28 +371,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
@@ -393,6 +390,8 @@ public class MainActivity extends AppCompatActivity {
                 case 0:
                     return MainFragment.newInstance(adapter);
                 case 1:
+                    return AnalyticsFragment.newInstance(adapter);
+                case 2:
                     return AboutFragment.newInstance(0);
                 default:
                     return AboutFragment.newInstance(0);
@@ -402,20 +401,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 2;
+            return 3;
         }
-
-//        @Override
-//        public CharSequence getPageTitle(int position) {
-//            switch (position) {
-//                case 0:
-//                    return "SECTION 1";
-//                case 1:
-//                    return "SECTION 2";
-//                case 2:
-//                    return "SECTION 3";
-//            }
-//            return null;
-//        }
     }
 }

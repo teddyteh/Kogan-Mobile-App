@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimary"
+    android:background="?colorBackground"
     android:orientation="vertical"
     android:scrollbarAlwaysDrawVerticalTrack="true">
 
@@ -15,7 +15,7 @@
         android:layout_marginTop="22dp"
         android:gravity="center_horizontal"
         android:text="Account Login"
-        android:textColor="@android:color/white"
+        android:textColor="?addAccountTitle"
         android:textSize="26sp"
         android:textStyle="bold" />
 
@@ -26,7 +26,7 @@
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
         android:layout_marginTop="70dp"
-        android:background="@android:color/white"
+        android:background="?addAccountLoginBackground"
         android:elevation="4dp"
         android:orientation="vertical"
         android:padding="20dp">
@@ -37,26 +37,28 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:progressTint="@color/colorAccent"
+            android:progressTint="?addAccountProgressBar"
             android:visibility="gone" />
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingTop="30dp">
+            android:paddingTop="30dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true">
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                app:hintTextAppearance="?addAccountField">
 
                 <EditText
                     android:id="@+id/account"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:hint="User Name"
-                    android:inputType="number"
-                    android:singleLine="true" />
+                    android:inputType="number" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -64,7 +66,8 @@
                 android:layout_height="wrap_content"
                 app:passwordToggleContentDescription="test"
                 app:passwordToggleEnabled="true"
-                app:passwordToggleTint="@android:color/tertiary_text_light">
+                app:passwordToggleTint="@android:color/tertiary_text_light"
+                app:hintTextAppearance="?addAccountField">
 
                 <android.support.design.widget.TextInputEditText
                     android:id="@+id/password"
@@ -77,7 +80,8 @@
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                app:hintTextAppearance="?addAccountField">
 
                 <EditText
                     android:id="@+id/nickName"
@@ -101,7 +105,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="22dp"
-                android:background="#d67601"
+                android:background="?addAccountLoginButton"
                 android:elevation="6dp"
                 android:text="Sign in"
                 android:textAllCaps="false"
