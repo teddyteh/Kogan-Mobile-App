@@ -53,7 +53,7 @@
         tools:layout_constraintLeft_creator="1"
         app:layout_constraintLeft_toLeftOf="parent">
 
-        <devlight.io.library.ArcProgressStackView
+        <com.gigamole.library.ArcProgressStackView
             android:id="@+id/apsv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -63,7 +63,6 @@
             app:apsv_animation_duration="1000"
             app:apsv_dragged="false"
             app:apsv_draw_width="60dp"
-            app:apsv_leveled="true"
             app:apsv_model_bg_enabled="true"
             app:apsv_model_offset="-10dp"
             app:apsv_preview_colors="@array/devlight"

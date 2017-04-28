@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ListView;
 
+import com.gigamole.library.ArcProgressStackView;
 import com.teddyteh.kmscraper.KMadapter;
 import com.teddyteh.kmscraper.adapter.KMexception;
 import com.teddyteh.kmusage.ListItemDataModel;
@@ -34,7 +35,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-import devlight.io.library.ArcProgressStackView;
 
 public class MainFragment extends Fragment {
     public static final String TAG = "MainActivity";
