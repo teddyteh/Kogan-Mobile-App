@@ -2,6 +2,7 @@ package com.teddyteh.kmscraper.adapter;
 
 import android.util.Log;
 
+import com.teddyteh.kmscraper.model.History;
 import com.teddyteh.kmscraper.model.Usage;
 
 import org.jsoup.nodes.Document;
@@ -26,6 +27,7 @@ class KMusage {
 
     public static final String TAG = "KMusage";
     private List<Usage> entries = new ArrayList<Usage>();
+    private List<History> history = new ArrayList<>();
     private int mVoiceCnt = 0;
     private int mSmsCnt = 0;
     private int mDataCnt = 0;
@@ -81,6 +83,10 @@ class KMusage {
                 Log.e(TAG, "Usage parse error. Entry = '" + entry + "'");
                 throw new KMDocumentException("Usage parse error", usageDoc);
             }
+            if (type.equals("D")) {
+                History history = buildHistory(usage);
+                this.history.add(history);
+            }
 
             // Only add to list if entry date >= last renew date
             if (usage.getTs().compareTo(mPeriodStart) >= 0) {
@@ -88,6 +94,16 @@ class KMusage {
                 this.entries.add(usage);
             }
         }
+    }
+
+    private History buildHistory(Usage usage) {
+        History history = new History(usage.getUser(), usage.getTs());
+        history.setType("D");
+        history.setVolume(usage.getVolume());
+        history.setCost(usage.getCost());
+        history.setNumber(usage.getNumber());
+        history.setCallType(usage.getCallType());
+        return history;
     }
 
     /*
@@ -252,6 +268,10 @@ class KMusage {
 
     public int getSmsCnt() {
         return mSmsCnt;
+    }
+
+    public List<History> getHistory() {
+        return history;
     }
 
     public int getDataCnt() {

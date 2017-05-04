@@ -198,6 +198,7 @@ public class MainFragment extends Fragment {
     /*
      *  Draw the image, circles, arcs and all
      */
+
     private void buildGraph(ImageView image) throws KMexception {
         //  TODO - Restructure graph drawing
         // --------------------------------------------------------------------------------
@@ -299,7 +300,6 @@ public class MainFragment extends Fragment {
         image.setImageBitmap(bitmap);
         image.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
     }
-
     private void drawArc(Canvas canvas, int radius, int color, float degrees) {
         float width = 44.0f;
         Paint arcPaint = new Paint();

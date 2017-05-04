@@ -39,6 +39,8 @@ import com.teddyteh.kmscraper.KMadapter;
 import com.teddyteh.kmscraper.adapter.KMLoginException;
 import com.teddyteh.kmscraper.adapter.KMUnavailableException;
 import com.teddyteh.kmscraper.adapter.KMexception;
+import com.teddyteh.kmscraper.model.History;
+import com.teddyteh.kmscraper.model.Usage;
 import com.teddyteh.kmusage.fragments.AboutFragment;
 import com.teddyteh.kmusage.fragments.AnalyticsFragment;
 import com.teddyteh.kmusage.fragments.MainFragment;
@@ -213,37 +215,7 @@ public class MainActivity extends AppCompatActivity {
         spinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         mSpinner.setAdapter(spinAdapter);
-        mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                // Add an account
-                if (position == (parent.getAdapter().getCount() - 1)) {
-                    Intent addAccount = new Intent(MainActivity.this, AccountDetailsActivity.class);
-                    startActivity(addAccount);
-                } else {
-                    // Show info for an account
-
-                    // Get all accounts
-                    Account[] acc = mAccountManager.getAccountsByType(mAccountType);
-
-                    // Update selected account
-                    mAccount = acc[position];
-                    mPassword = mAccountManager.getPassword(mAccount);
-                    mUser = mAccount.name;
-                    mNickName = mAccountManager.getUserData(mAccount, AccountDetailsActivity.NICK_NAME);
-
-                    // Refresh
-                    refreshLayout();
-
-                    //Toast.makeText(parent.getContext(), "Showing info for " + mNickName, Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
+        mSpinner.setOnItemSelectedListener(new ItemListener(this));
     }
 
     public void setupViewPager() {
@@ -275,6 +247,54 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private class ItemListener implements AdapterView.OnItemSelectedListener {
+
+        Activity mCallingActivity;
+
+        private ItemListener(Activity activity) {
+            mCallingActivity = activity;
+        }
+
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            // Get all accounts
+            Account[] acc = mAccountManager.getAccountsByType(mAccountType);
+
+            // Add an account
+            if (position == (parent.getAdapter().getCount() - 1)) {
+                if (acc.length > 0) {
+                    mAccountManager.addAccount(
+                            getString(R.string.account_type),
+                            getString(R.string.authtoken_type),
+                            null,
+                            new Bundle(),
+                            mCallingActivity,
+                            new OnAccountAddComplete(),
+                            null);
+                }
+            } else {
+                // Show info for an account
+
+
+                // Update selected account
+                mAccount = acc[position];
+                mPassword = mAccountManager.getPassword(mAccount);
+                mUser = mAccount.name;
+                mNickName = mAccountManager.getUserData(mAccount, AccountDetailsActivity.NICK_NAME);
+
+                // Refresh
+                refreshLayout();
+
+                //Toast.makeText(parent.getContext(), "Showing info for " + mNickName, Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+
+        }
     }
 
     public class RetrieveData extends AsyncTask<String, Void, KMadapter> {
@@ -319,6 +339,7 @@ public class MainActivity extends AppCompatActivity {
 
             String msg;
             if (adapter != null && adapter.isValid()) {
+                List<History> history = adapter.getHistoricalDataUsage();
                 setupViewPager();
             } else {
                 // The login failed

@@ -77,6 +77,16 @@ public class DatabaseManager {
         return usageList;
     }
 
+    public List<History> getHistory(String user) {
+        List<History> historyList = null;
+        try {
+            historyList = getHelper().getHistoryDao().queryForEq("user", user);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return historyList;
+    }
+
     public void addSummary(Summary summary) {
         try {
             getHelper().getSummaryDao().create(summary);
@@ -139,6 +149,25 @@ public class DatabaseManager {
     public void doTransaction(Callable<Void> func) {
         try {
             getHelper().doTransaction(func);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void delHistory(String user) {
+        try {
+            Dao dao = getHelper().getHistoryDao();
+            DeleteBuilder<Usage, String> deleteBuilder = dao.deleteBuilder();
+            deleteBuilder.where().eq("USER", user);
+            dao.delete(deleteBuilder.prepare());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void addHistory(History history) {
+        try {
+            getHelper().getHistoryDao().create(history);
         } catch (SQLException e) {
             e.printStackTrace();
         }

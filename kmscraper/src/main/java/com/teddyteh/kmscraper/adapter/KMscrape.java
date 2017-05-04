@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.teddyteh.kmscraper.KMadapter;
 import com.teddyteh.kmscraper.model.DatabaseManager;
+import com.teddyteh.kmscraper.model.History;
 import com.teddyteh.kmscraper.model.Summary;
 import com.teddyteh.kmscraper.model.Usage;
 
@@ -40,6 +41,7 @@ public class KMscrape implements KMadapter {
     private String m_Userid = null;
     private String m_Password = null;
     private String m_Cookie = null;
+    private String m_CSRFtoken = null;
     private KMusage m_Usage = null;
 
     private Context m_Context;
@@ -48,7 +50,7 @@ public class KMscrape implements KMadapter {
     private List<Usage> callUsageList;
     private List<Usage> textUsageList;
     private List<Usage> dataUsageList;
-    private List<Usage> historicalUsageList;
+    private List<History> historicalUsageList;
     private Date mMostRecentDataUsage;
 
     private long national_data = 0L;
@@ -61,7 +63,7 @@ public class KMscrape implements KMadapter {
         callUsageList = new ArrayList<Usage>();
         textUsageList = new ArrayList<Usage>();
         dataUsageList = new ArrayList<Usage>();
-        historicalUsageList = new ArrayList<Usage>();
+        historicalUsageList = new ArrayList<History>();
 
         DatabaseManager.init(context);
         m_Context = context;
@@ -125,11 +127,13 @@ public class KMscrape implements KMadapter {
         this.m_Summary.setQuota((int) m_Summary.getQuota());
         this.m_Summary.setDataPC(m_Summary.getData_percent());
 
-        KMpage usagePage = this.fetchPage(USAGE, m_Cookie, null);
+        String urlParams = "csrfToken=" + m_CSRFtoken + "&usage-history-form[type]=All&usage-history-form[months]=12";
+        KMpage usagePage = this.fetchPage(USAGE, m_Cookie, urlParams);
         htmlContentInStringFormat = usagePage.getBody();
         htmlDocument = Jsoup.parse(htmlContentInStringFormat, USAGE);
         m_Usage = new KMusage(htmlDocument, m_Summary.getData_renews(), m_Userid);
         allUsageList = m_Usage.getEntries();
+        historicalUsageList = m_Usage.getHistory();
         processUsageList();
         save();
     }
@@ -156,6 +160,11 @@ public class KMscrape implements KMadapter {
                             for (Usage usage : allUsageList) {
                                 DatabaseManager.getInstance().addUsage(usage);
                             }
+                            DatabaseManager.getInstance().delHistory(getUser());
+                            for (History history : historicalUsageList) {
+                                DatabaseManager.getInstance().addHistory(history);
+                            }
+
                         } catch (Exception e) {
                             throw new KMexception("Transaction error: '" + e.toString() + "'", e);
                         }
@@ -247,6 +256,7 @@ public class KMscrape implements KMadapter {
             Log.e(TAG, "CSRF token not found in login page");
             throw new KMexception("Unable extract CSRF token", loginPage);
         }
+        m_CSRFtoken = csrfToken;
 
 		/*
 		 * POST to the login page, passing CSRF token/user/pwd
@@ -485,8 +495,8 @@ public class KMscrape implements KMadapter {
     }
 
     @Override
-    public List<Usage> getHistoricalDataUsage() {
-        return null;
+    public List<History> getHistoricalDataUsage() {
+        return historicalUsageList;
     }
 
     @Override

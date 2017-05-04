@@ -1,6 +1,7 @@
 package com.teddyteh.kmscraper;
 
 import com.teddyteh.kmscraper.adapter.KMexception;
+import com.teddyteh.kmscraper.model.History;
 import com.teddyteh.kmscraper.model.Usage;
 
 import java.util.Date;
@@ -75,7 +76,7 @@ public interface KMadapter {
     public abstract List<Usage> getDataUsage();
 
     /*  List of data records since dawn of time */
-    public abstract List<Usage> getHistoricalDataUsage();
+    public abstract List<History> getHistoricalDataUsage();
 
     /*	List of call records				*/
     public abstract List<Usage> getCallUsage();

@@ -22,13 +22,14 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     private final String TAG = "DatabaseHelper";
     //  Database version - change this to force a database rebuild
-    public static final int DATABASE_VERSION = 2;
+    public static final int DATABASE_VERSION = 3;
     //  The name of the database
     private static final String DATABASE_NAME = "NotTheOfficialKoganMobileApp.db";
 
     //  The DAO object we use to access the NotTheOfficialKoganMobileApp tables
     private Dao<Summary, String> summaryDao = null;
     private Dao<Usage, String> usageDao = null;
+    private Dao<History, String> historyDao = null;
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -43,6 +44,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         try {
             TableUtils.createTable(connectionSource, Summary.class);
             TableUtils.createTable(connectionSource, Usage.class);
+            TableUtils.createTable(connectionSource, History.class);
         } catch (SQLException e) {
             Log.e(DatabaseHelper.class.getName(), "Can't create NotTheOfficialKoganMobileApp database", e);
             throw new RuntimeException(e);
@@ -60,6 +62,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         try {
             TableUtils.dropTable(connectionSource, Summary.class, true);
             TableUtils.dropTable(connectionSource, Usage.class, true);
+            TableUtils.dropTable(connectionSource, History.class, true);
             onCreate(db, connectionSource);
         } catch (SQLException e) {
             Log.e(DatabaseHelper.class.getName(), "Exception during onUpgrade of NotTheOfficialKoganMobileApp database", e);
@@ -95,6 +98,20 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             }
         }
         return usageDao;
+    }
+
+    /*
+     *
+     */
+    public Dao<History, String> getHistoryDao() {
+        if (null == historyDao) {
+            try {
+                historyDao = getDao(History.class);
+            } catch (java.sql.SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return historyDao;
     }
 
     public void doTransaction(Callable<Void> func) throws java.sql.SQLException {
