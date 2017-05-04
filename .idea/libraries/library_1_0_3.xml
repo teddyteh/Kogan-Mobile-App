@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="library-1.0.3">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.android/build-cache/346f41247a9c4178d46a9f0d678d5c4d41c701b9/output/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.android/build-cache/346f41247a9c4178d46a9f0d678d5c4d41c701b9/output/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.gigamole.arcprogressstackview/library/1.0.3/2f58c8e990a41140b6396a19f96e9ec64d325fc3/library-1.0.3-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
