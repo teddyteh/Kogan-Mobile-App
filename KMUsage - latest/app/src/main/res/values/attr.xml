@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="addAccountTitle" format="reference|color" />
+    <attr name="addAccountLoginBackground" format="reference|color" />
+    <attr name="addAccountProgressBar" format="reference|color" />
+    <attr name="addAccountField" format="reference" />
+    <attr name="addAccountLoginButton" format="reference|color" />
+
+    <attr name="colorBackground" format="reference|color" />
+    <attr name="colorDarkGrey" format="reference|color" />
+    <attr name="colorLightGrey" format="reference|color" />
+    <attr name="colorDataUsed" format="reference|color" />
+    <attr name="colorDaysLeft" format="reference|color" />
+</resources>

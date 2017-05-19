@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">KMUsage</string>
+    <string name="action_settings">Settings</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+
+    <!-- Settings for account authenticator -->
+    <string name="account_type">com.teddyteh.koganmobile.account</string>
+    <string name="authtoken_type">CSRF</string>
+    <string name="forgot_pass"><a href="http://www.google.com">Forgot password?</a></string>
+    <string name="invalid_password">Incorrect account/mobile number or password</string>
+    <string name="server_unavailable">Kogan Mobile server unavailable. Please try later</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="login_failure">Unexpected login failure - has the password changed?</string>
+</resources>
